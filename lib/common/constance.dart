@@ -6,4 +6,7 @@ class ConstanceData{
   static String appWriteDatabaseID = "6603947187841fc61e40"; // 数据库ID
   static String appWriteUserCollectionID = "6603947a50ea795ab2bd"; // 集合ID
   static String appWriteUserBucketsID = "660510f3e52d7d75a6ac"; // 集合桶ID
+
+  static String appWriteFriendsShipCollectionID = "660bc7d9234ac584550a"; // 集合ID
+
 }
