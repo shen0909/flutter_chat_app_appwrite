@@ -1,6 +1,10 @@
+import 'package:appwrite/appwrite.dart';
+import 'package:chat_app_appwrite/common/constance.dart';
+import 'package:chat_app_appwrite/modle/chatMessageListModel.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../modle/UserModle.dart';
+import '../../modle/friendsModle.dart';
 import '../../router/router.dart';
 import '../../utils/AppwriteManager.dart';
 import '../login_sign/login_sign_logic.dart';
@@ -14,8 +18,29 @@ class HomeViewLogic extends GetxController {
   AppWriteManager appWriteManager = AppWriteManager();
 
   @override
-  void onInit() {
+  onInit() {
     super.onInit();
+    /// todo:好友列表和聊天头是不是只用保留一个就行
+    getFriendList();
+    getChatHead();
+  }
+
+  /// 获取好友列表
+  getFriendList() async {
+    await appWriteManager
+        .findUserList(collectionId: ConstanceData.appWriteFriendsShipCollectionID)
+        .then((value) {
+      state.friendList.clear();
+      for (var element in value.documents) {
+        // todo:使用能看见的持久化
+        // 过滤当前用户的好友
+        if (element.data["myUserId"] == _getStorage.read("userID")) {
+          FriendModel friendInfoModel = FriendModel.fromJson(element.data);
+          state.friendList.add(friendInfoModel);
+          update();
+        }
+      }
+    });
   }
 
   // 当前用户退出登录
@@ -41,7 +66,7 @@ class HomeViewLogic extends GetxController {
   getAllUser() {
     appWriteManager.findUserList().then((value) {
       value.documents.forEach((element) {
-        print("user-list:${element.data}\n");
+        print("全部用户列表:${element.data}\n");
       });
     });
   }
@@ -49,18 +74,18 @@ class HomeViewLogic extends GetxController {
   /// 查找用户
   toSearchUser() async {
     if (state.controller.text.isEmpty) {
-      state.searchUserList.clear();
+      state.searchFriendList.clear();
       print("请输入用户信息");
       // SmartDialog.showToast("请输入用户信息");
     } else {
       print("去查找");
       await appWriteManager.findUserList().then((value) {
-        state.searchUserList.clear();
+        state.searchFriendList.clear();
         for (var element in value.documents) {
           UserModel userModel = UserModel.fromJson(element.data);
           if (userModel.userName.contains(state.controller.text) ||
               userModel.userID.contains(state.controller.text)) {
-            state.searchUserList.add(userModel);
+            state.searchFriendList.add(userModel);
           }
         }
       });
@@ -71,5 +96,23 @@ class HomeViewLogic extends GetxController {
   /// 添加朋友
   addFriends(UserModel userModel) {
     appWriteManager.createFriendsCollection(userModel);
+  }
+
+  /// 去与朋友聊天
+  toChat(FriendModel friendInfo) {
+    Get.toNamed(ChatRouters.chatPage, arguments: friendInfo);
+  }
+
+  /// 获取聊天头
+  getChatHead(){
+    appWriteManager.findUserList(collectionId: ConstanceData.appWriteMessageListCollectionID,queries: [
+      Query.equal('sendId', _getStorage.read("userID"))
+    ]).then((value) {
+      value.documents.forEach((element) {
+        print("获取到的聊天头:${element.data.toString()}");
+        state.chatHeadList.add(ChatMessageList.fromJson(element.data));
+        update();
+      });
+    });
   }
 }

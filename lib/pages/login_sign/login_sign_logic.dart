@@ -24,9 +24,8 @@ class LoginSignLogic extends GetxController {
   signUp() {
     if(state.passwordContro.text.isNotEmpty && state.emilContro.text.isNotEmpty){
       if(state.passwordContro.text.length > 8){
-
         appWriteManager.signUp(ID.unique(), state.emilContro.text, state.passwordContro.text,state.nameContro.text, (value){
-          // print("注册成功 ${value.t}");
+          // todo:注册成功添加用户到数据库
           SmartDialog.showToast("用户注册成功");
           state.isSign = false;
           update();

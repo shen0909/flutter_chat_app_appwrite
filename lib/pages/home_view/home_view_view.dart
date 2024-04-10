@@ -58,30 +58,63 @@ class HomeViewPage extends StatelessWidget {
                         icon: Icon(Icons.search)))
               ],
             ),
-            state.searchUserList.isNotEmpty ?
+            state.searchFriendList.isNotEmpty ?
             Expanded(
               child: ListView.builder(
-                  itemCount: state.searchUserList.length, itemBuilder: (context, index) {
-                    var info = state.searchUserList[index];
+                  itemCount: state.searchFriendList.length, itemBuilder: (context, index) {
+                    var friendItem = state.searchFriendList[index];
                 return SizedBox(
                   child: Row(
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(info.userName),
+                        child: Text(friendItem.userName),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(info.userID),
+                        child: Text(friendItem.userID),
                       ),
                       const Spacer(),
-                      IconButton(onPressed: () => logic.addFriends(info),
-                          icon: Icon(Icons.add))
+                      IconButton(onPressed: () => logic.addFriends(friendItem), icon: Icon(Icons.add))
                     ],
                   ),
                 );
               }),
-            ) : Container()
+            ) : Container(),
+            Text("好友列表"),
+            state.chatHeadList.isNotEmpty ?
+            Expanded(
+              child: ListView.builder(
+                  itemCount: state.friendList.length, itemBuilder: (context, index) {
+                var friendItem = state.friendList[index];
+                return GestureDetector(
+                  onTap: ()=>logic.toChat(friendItem),
+                  child: SizedBox(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(friendItem.friendsUserName),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(friendItem.friendUserId),
+                            ),
+                            const Spacer(),
+                          ],
+                        ),
+                        Text("${state.chatHeadList[index].message}",style: TextStyle(color: Colors.yellow),)
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ) : Container(),
+
           ],
         );
       }),
