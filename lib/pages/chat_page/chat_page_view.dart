@@ -6,44 +6,42 @@ class ChatPagePage extends StatelessWidget {
   ChatPagePage({Key? key}) : super(key: key);
 
   final logic = Get.put(ChatPageLogic());
-  final state = Get
-      .find<ChatPageLogic>()
-      .state;
+  final state = Get.find<ChatPageLogic>().state;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Center(child: Text(state.friendInfo.friendsUserName)),
-      ),
+      appBar:
+          AppBar(title: Center(child: Text(state.friendInfo!.friendsUserName))),
       body: GetBuilder<ChatPageLogic>(builder: (logic) {
         return Column(
           children: [
-            Expanded(child: Container(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: state.messageList.length,
-                  itemBuilder: (context, index) {
-                    String message = state.messageList[index]["message"];
-                    bool isMySend = state.messageList[index]["my_send"];
-                    return Container(
-                      // color: Colors.green,
-                      child: Row(
+            Expanded(
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: state.messageList.length,
+                    reverse: true,
+                    itemBuilder: (context, index) {
+                      String message = state.messageList[index]["message"];
+                      bool isMySend = state.messageList[index]["my_send"];
+                      return Row(
                         children: [
-                          isMySend ?
-                          Expanded(child: Container()):Container(),
+                          isMySend ? Expanded(child: Container()) : Container(),
                           Container(
-                            alignment: Alignment.bottomRight,
-                            height: 50,
-                              margin: EdgeInsets.only(top: 20,right: 10),
-                              // padding: EdgeInsets.only(top: 20),
-                              color: Colors.green,
+                              alignment: Alignment.bottomRight,
+                              decoration: BoxDecoration(
+                                  color: isMySend ? Colors.green : Colors.white,
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(5))),
+                              height: 50,
+                              margin: const EdgeInsets.only(
+                                  top: 20, right: 10, left: 10),
+                              padding: const EdgeInsets.all(5),
                               child: Center(child: Text(message))),
                         ],
-                      ),
-                    );
-                  }),
-            )),
+                      );
+                    })),
+            const SizedBox(height: 10),
             Container(
               height: 50,
               width: double.infinity,
@@ -51,8 +49,8 @@ class ChatPagePage extends StatelessWidget {
               child: Row(
                 children: [
                   Expanded(
-                      child: TextFormField(
-                          controller: state.messageController)),
+                      child:
+                          TextFormField(controller: state.messageController)),
                   GestureDetector(
                     onTap: () => logic.sendMessage(),
                     child: SizedBox(

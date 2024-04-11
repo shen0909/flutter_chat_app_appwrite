@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:appwrite/appwrite.dart';
 import 'package:chat_app_appwrite/common/constance.dart';
 import 'package:chat_app_appwrite/modle/chatMessageListModel.dart';
@@ -7,6 +8,7 @@ import '../../modle/UserModle.dart';
 import '../../modle/friendsModle.dart';
 import '../../router/router.dart';
 import '../../utils/AppwriteManager.dart';
+import '../../utils/event_bus.dart';
 import '../login_sign/login_sign_logic.dart';
 import '../login_sign/login_sign_state.dart';
 import 'home_view_state.dart';
@@ -16,6 +18,7 @@ class HomeViewLogic extends GetxController {
   final LoginSignState loginSignState = Get.find<LoginSignLogic>().state;
   final GetStorage _getStorage = GetStorage();
   AppWriteManager appWriteManager = AppWriteManager();
+  late StreamSubscription streamUpdateChatHead;
 
   @override
   onInit() {
@@ -23,6 +26,9 @@ class HomeViewLogic extends GetxController {
     /// todo:好友列表和聊天头是不是只用保留一个就行
     getFriendList();
     getChatHead();
+    streamUpdateChatHead = eventBus.on<EventBusNewMessage>().listen((event) {
+      getChatHead();
+    });
   }
 
   /// 获取好友列表
@@ -104,12 +110,12 @@ class HomeViewLogic extends GetxController {
   }
 
   /// 获取聊天头
-  getChatHead(){
-    appWriteManager.findUserList(collectionId: ConstanceData.appWriteMessageListCollectionID,queries: [
+  getChatHead() async {
+    state.chatHeadList.clear();
+   await appWriteManager.findUserList(collectionId: ConstanceData.appWriteMessageListCollectionID,queries: [
       Query.equal('sendId', _getStorage.read("userID"))
     ]).then((value) {
       value.documents.forEach((element) {
-        print("获取到的聊天头:${element.data.toString()}");
         state.chatHeadList.add(ChatMessageList.fromJson(element.data));
         update();
       });

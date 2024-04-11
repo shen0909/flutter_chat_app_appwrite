@@ -5,7 +5,7 @@ import '../../modle/messageModle.dart';
 
 class ChatPageState {
 
-  late FriendModel friendInfo;
+  late FriendModel? friendInfo;
   TextEditingController messageController = TextEditingController();
   List<MessageModel> getMessageList = [];
   // List<String> messageList = [];

@@ -7,9 +7,7 @@ class HomeViewPage extends StatelessWidget {
   HomeViewPage({Key? key}) : super(key: key);
 
   final logic = Get.put(HomeViewLogic());
-  final state = Get
-      .find<HomeViewLogic>()
-      .state;
+  final state = Get.find<HomeViewLogic>().state;
 
   @override
   Widget build(BuildContext context) {
@@ -53,68 +51,81 @@ class HomeViewPage extends StatelessWidget {
                     controller: state.controller,
                   ),
                 ),
-                SizedBox(width: 30,
-                    child: IconButton(onPressed: () => logic.toSearchUser(),
+                SizedBox(
+                    width: 30,
+                    child: IconButton(
+                        onPressed: () => logic.toSearchUser(),
                         icon: Icon(Icons.search)))
               ],
             ),
-            state.searchFriendList.isNotEmpty ?
-            Expanded(
-              child: ListView.builder(
-                  itemCount: state.searchFriendList.length, itemBuilder: (context, index) {
-                    var friendItem = state.searchFriendList[index];
-                return SizedBox(
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(friendItem.userName),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(friendItem.userID),
-                      ),
-                      const Spacer(),
-                      IconButton(onPressed: () => logic.addFriends(friendItem), icon: Icon(Icons.add))
-                    ],
-                  ),
-                );
-              }),
-            ) : Container(),
-            Text("好友列表"),
-            state.chatHeadList.isNotEmpty ?
-            Expanded(
-              child: ListView.builder(
-                  itemCount: state.friendList.length, itemBuilder: (context, index) {
-                var friendItem = state.friendList[index];
-                return GestureDetector(
-                  onTap: ()=>logic.toChat(friendItem),
-                  child: SizedBox(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: Text(friendItem.friendsUserName),
+            state.searchFriendList.isNotEmpty
+                ? Expanded(
+                    child: ListView.builder(
+                        itemCount: state.searchFriendList.length,
+                        itemBuilder: (context, index) {
+                          var friendItem = state.searchFriendList[index];
+                          return SizedBox(
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(friendItem.userName),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(friendItem.userID),
+                                ),
+                                const Spacer(),
+                                IconButton(
+                                    onPressed: () =>
+                                        logic.addFriends(friendItem),
+                                    icon: Icon(Icons.add))
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: Text(friendItem.friendUserId),
+                          );
+                        }),
+                  )
+                : Container(),
+            const Text("好友列表"),
+            state.chatHeadList.isNotEmpty
+                ? Expanded(
+                    child: ListView.builder(
+                        itemCount: state.chatHeadList.length,
+                        itemBuilder: (context, index) {
+                          var friendItem = state.chatHeadList[index];
+                          return GestureDetector(
+                            onTap: () => logic.toChat(state.friendList[index]),
+                            child: SizedBox(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 8.0),
+                                        child: Text(friendItem.displayName),
+                                      ),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 8.0),
+                                        child: Text(friendItem.receiveId),
+                                      ),
+                                      const Spacer(),
+                                    ],
+                                  ),
+                                  Text(
+                                    state.chatHeadList[index].message,
+                                    style: const TextStyle(color: Colors.yellow),
+                                  )
+                                ],
+                              ),
                             ),
-                            const Spacer(),
-                          ],
-                        ),
-                        Text("${state.chatHeadList[index].message}",style: TextStyle(color: Colors.yellow),)
-                      ],
-                    ),
-                  ),
-                );
-              }),
-            ) : Container(),
-
+                          );
+                        }),
+                  )
+                : Container(),
           ],
         );
       }),
